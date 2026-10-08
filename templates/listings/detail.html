@@ -1,0 +1,25 @@
+{% extends 'base.html' %}{% load listing_tags %}
+{% block title %}{{ ad.title }} | دیوارک{% endblock %}
+{% block content %}
+<nav class="breadcrumbs" aria-label="مسیر صفحه"><a href="{% url 'listings:list' %}">آگهی‌ها</a><span> / </span><a href="{% url 'listings:list' %}?category={{ ad.category.slug }}">{{ ad.category.name }}</a><span> / {{ ad.city.name }}</span></nav>
+{% if ad.status != 'published' %}<div class="message info">این آگهی در فهرست عمومی نمایش داده نمی‌شود. وضعیت: {{ ad.get_status_display }}</div>{% endif %}
+<div class="detail-layout">
+  <section class="detail-content">
+    <p class="eyebrow">{{ ad.category.name }}</p><h1>{{ ad.title }}</h1><p class="muted">{{ ad.city.name }}{% if ad.district %}، {{ ad.district }}{% endif %} · ثبت {{ ad.created_at|date:'Y/m/d'|fa_number }} (میلادی)</p>
+    <div class="detail-photo">{% if ad.image %}<img src="{{ ad.image.url }}" alt="{{ ad.title }}">{% else %}<div class="detail-placeholder art-{{ ad.category.slug }}"><span>{{ ad.category.icon }}</span><p>تصویری برای این آگهی ثبت نشده است</p></div>{% endif %}</div>
+    <h2>توضیحات</h2><div class="description">{{ ad.description|linebreaks }}</div>
+    <dl class="details-table"><div><dt>دسته‌بندی</dt><dd>{{ ad.category.name }}</dd></div><div><dt>شهر</dt><dd>{{ ad.city.name }}</dd></div><div><dt>محله</dt><dd>{{ ad.district|default:'ثبت نشده' }}</dd></div><div><dt>نوع قیمت</dt><dd>{{ ad.get_price_type_display }}</dd></div></dl>
+  </section>
+  <aside class="contact-panel">
+    <p class="eyebrow">قیمت آگهی</p><p class="detail-price">{% if ad.price_type == 'free' %}رایگان{% elif ad.price_type == 'negotiable' %}توافقی{% else %}{{ ad.price|toman }} <small>تومان</small>{% endif %}</p>
+    <div class="seller"><span class="avatar">{{ ad.owner.first_name|default:ad.owner.username|slice:':1' }}</span><div><strong>{{ ad.owner.first_name|default:ad.owner.username }}</strong><small>آگهی‌دهنده</small></div></div>
+    {% if show_contact %}<a class="button button-primary button-full phone-number" href="tel:{{ ad.phone }}" dir="ltr">{{ ad.phone }}</a>
+    {% elif user.is_authenticated %}<form method="post" action="{% url 'listings:contact' ad.pk %}">{% csrf_token %}<button class="button button-primary button-full" type="submit">نمایش اطلاعات تماس</button></form>
+    {% else %}<a class="button button-primary button-full" href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}">ورود برای نمایش شماره</a>{% endif %}
+    {% if ad.status == 'published' %}<form method="post" action="{% url 'listings:bookmark' ad.pk %}">{% csrf_token %}<button class="button button-outline button-full" type="submit">{% if is_bookmarked %}★ حذف نشان{% else %}☆ نشان‌کردن آگهی{% endif %}</button></form>{% endif %}
+    {% if user == ad.owner %}<a class="button button-outline button-full" href="{% url 'listings:edit' ad.pk %}">ویرایش آگهی من</a>{% endif %}
+    <div class="contact-tip"><strong>معامله با خیال راحت</strong><p>پیش از پرداخت، کالا را ببینید و مشخصات آن را بررسی کنید.</p></div>
+  </aside>
+</div>
+{% if related_ads %}<section class="related-section"><h2>آگهی‌های مشابه</h2><div class="ad-grid">{% for ad in related_ads %}{% include 'includes/card.html' %}{% endfor %}</div></section>{% endif %}
+{% endblock %}

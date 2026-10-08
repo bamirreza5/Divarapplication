@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}{% if is_edit %}ویرایش آگهی{% else %}ثبت آگهی{% endif %} | دیوارک{% endblock %}
+{% block content %}
+<div class="form-page"><div class="page-heading"><div><p class="eyebrow">یک شروع تازه</p><h1>{% if is_edit %}ویرایش آگهی{% else %}آگهی‌ات را ثبت کن{% endif %}</h1><p>جزئیات دقیق، عکس روشن و قیمت مناسب به فروش بهتر کمک می‌کند.</p></div></div>
+  <form method="post" enctype="multipart/form-data" class="form-surface" data-ad-form>{% csrf_token %}
+    <div class="form-grid">{% include 'includes/fields.html' %}</div>
+    <div id="image-preview" class="image-preview" hidden><img alt="پیش‌نمایش تصویر انتخاب‌شده"></div>
+    <p class="form-note">{% if is_edit %}پس از ویرایش، آگهی دوباره بررسی می‌شود.{% else %}آگهی پس از تأیید مدیر در فهرست عمومی نمایش داده می‌شود.{% endif %}</p>
+    <div class="form-actions"><button class="button button-primary" type="submit">{% if is_edit %}ذخیره تغییرات{% else %}ثبت و ارسال برای بررسی{% endif %}</button><a class="button button-outline" href="{% url 'listings:mine' %}">انصراف</a></div>
+  </form>
+</div>
+{% endblock %}

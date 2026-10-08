@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block title %}نشان‌های من | دیوارک{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">برای بعد نگه دار</p><h1>نشان‌های من</h1><p>آگهی‌های منتشرشده‌ای که برای مرور دوباره نشان کرده‌اید.</p></div></div>
+<div class="ad-grid">{% for ad in page_obj %}{% include 'includes/card.html' %}{% empty %}<div class="empty-state"><span>☆</span><h2>نشان فعالی ندارید</h2><p>در صفحه آگهی روی «نشان‌کردن» بزنید. آگهی‌های فروخته‌شده یا حذف‌شده اینجا نمایش داده نمی‌شوند.</p><a class="button button-outline" href="{% url 'listings:list' %}">مرور آگهی‌ها</a></div>{% endfor %}</div>
+{% include 'includes/pagination.html' %}
+{% endblock %}

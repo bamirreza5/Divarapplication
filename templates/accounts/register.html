@@ -1,0 +1,3 @@
+{% extends 'base.html' %}
+{% block title %}ثبت‌نام | دیوارک{% endblock %}
+{% block content %}<div class="auth-card"><p class="eyebrow">شروع کنید</p><h1>ساخت حساب کاربری</h1><p class="muted">یک حساب برای ثبت و مدیریت آگهی‌های شما.</p><form method="post">{% csrf_token %}{% include 'includes/fields.html' %}<button class="button button-primary button-full" type="submit">ساخت حساب</button></form><p class="auth-switch">قبلاً ثبت‌نام کرده‌اید؟ <a href="{% url 'accounts:login' %}">وارد شوید</a></p></div>{% endblock %}

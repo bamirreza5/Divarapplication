@@ -1,0 +1,3 @@
+{% extends 'base.html' %}
+{% block title %}حذف آگهی | دیوارک{% endblock %}
+{% block content %}<div class="auth-card"><p class="eyebrow">حذف آگهی</p><h1>این آگهی حذف شود؟</h1><p class="delete-title">{{ ad.title }}</p><p class="muted">حذف آگهی قابل بازگشت نیست.</p><form method="post">{% csrf_token %}<div class="form-actions"><button class="button button-danger-solid" type="submit">بله، حذف آگهی</button><a class="button button-outline" href="{% url 'listings:mine' %}">انصراف</a></div></form></div>{% endblock %}

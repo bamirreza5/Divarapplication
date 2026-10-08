@@ -1,0 +1,28 @@
+{% extends 'base.html' %}{% load listing_tags %}
+{% block content %}
+<div class="listing-layout">
+  <aside class="sidebar" aria-label="فیلتر آگهی‌ها">
+    <h2>دسته‌ها</h2>
+    <a class="category-link{% if not request.GET.category %} active{% endif %}" href="{% querystring category=None page=None %}"><span>☷</span> همه آگهی‌ها</a>
+    {% for category in categories %}<a class="category-link{% if request.GET.category == category.slug %} active{% endif %}" href="{% querystring category=category.slug page=None %}"><span>{{ category.icon }}</span>{{ category.name }}</a>{% endfor %}
+    <div class="sidebar-note"><span>یک فرصت تازه</span><p>چیزهایی که دیگر نیاز ندارید، برای کسی دیگر ارزشمندند.</p><a href="{% url 'listings:create' %}">آگهی خودت را ثبت کن ←</a></div>
+  </aside>
+  <section class="listing-main">
+    <div class="page-heading"><div><p class="eyebrow">بازار محلی شما</p><h1>چیزی که می‌خواهی، همین نزدیکی است.</h1><p>آگهی‌های تازه را ببین؛ ساده پیدا کن، مستقیم ارتباط بگیر.</p></div><span class="heading-symbol" aria-hidden="true"><svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M20 10c0 6-8 11-8 11S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span></div>
+    <form class="search-panel" method="get">
+      <div class="search-top"><div class="search-input"><label class="visually-hidden" for="{{ form.q.id_for_label }}">جست‌وجو در آگهی‌ها</label>{{ form.q }}</div><button class="button button-primary" type="submit">جست‌وجو</button></div>
+      <div class="filter-row">
+        <div><label for="{{ form.city.id_for_label }}">شهر</label>{{ form.city }}</div>
+        <div><label for="{{ form.category.id_for_label }}">دسته‌بندی</label>{{ form.category }}</div>
+        <div><label for="{{ form.min_price.id_for_label }}">از قیمت (تومان)</label>{{ form.min_price }}</div>
+        <div><label for="{{ form.max_price.id_for_label }}">تا قیمت (تومان)</label>{{ form.max_price }}</div>
+        <div><label for="{{ form.sort.id_for_label }}">مرتب‌سازی</label>{{ form.sort }}</div>
+      </div>
+      {% if form.errors %}<div class="form-errors" role="alert">{% for field in form %}{% if field.errors %}<div>{{ field.label }}: {{ field.errors }}</div>{% endif %}{% endfor %}{{ form.non_field_errors }}</div>{% endif %}
+    </form>
+    <div class="results-heading"><h2>آگهی‌های تازه <span>{{ page_obj.paginator.count|fa_number }} آگهی</span></h2><a href="{% url 'listings:list' %}">پاک‌کردن فیلترها</a></div>
+    <div class="ad-grid">{% for ad in page_obj %}{% include 'includes/card.html' %}{% empty %}<div class="empty-state"><span>⌕</span><h2>آگهی‌ای پیدا نشد</h2><p>عبارت جست‌وجو یا فیلترها را تغییر دهید.</p><a class="button button-outline" href="{% url 'listings:list' %}">دیدن همه آگهی‌ها</a></div>{% endfor %}</div>
+    {% include 'includes/pagination.html' %}
+  </section>
+</div>
+{% endblock %}

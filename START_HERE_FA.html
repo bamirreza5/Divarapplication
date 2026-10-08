@@ -1,0 +1,815 @@
+<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>راهنمای پروژه آموزشی دیوارک</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f7f6f3;color:#333;font:14px/2.1 Tahoma,Arial,sans-serif}header{background:#a62626;color:#fff;padding:38px 24px}header>div,main{max-width:1060px;margin:auto}header h1{font-size:30px;margin:0 0 8px}header p{margin:0;color:#f8dfdb}main{padding:28px 20px 60px}nav{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:26px}nav a{background:white;border:1px solid #e7e3df;border-radius:8px;padding:8px 15px;color:#a62626;text-decoration:none;font-size:12px}section{background:white;border:1px solid #e7e3df;border-radius:12px;padding:28px 34px;margin:22px 0;scroll-margin-top:20px}h1,h2,h3{line-height:1.8}h1{font-size:24px;color:#a62626}h2{font-size:20px;margin-top:32px}h3{font-size:16px;margin-top:26px}a{color:#a62626}p{overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;margin:20px 0;font-size:12px;display:block;overflow-x:auto}th,td{border:1px solid #e7e3df;padding:10px 14px;text-align:right}th{background:#f7f5f0}code{direction:ltr;unicode-bidi:isolate;display:inline-block;background:#f1f0ed;padding:1px 6px;border-radius:4px;font-family:Consolas,monospace;font-size:12px}pre{direction:ltr;text-align:left;background:#f1f0ed;border-radius:8px;padding:18px;overflow:auto;line-height:1.7}pre code{padding:0;display:block;background:none}ul,ol{padding-right:24px}.previews{display:grid;grid-template-columns:2fr 1fr;gap:20px}.previews a{display:block;text-decoration:none}.previews img{width:100%;height:400px;object-fit:contain;object-position:top;border:1px solid #e7e3df;background:white;border-radius:8px}.previews span{display:block;padding:10px;color:#777;text-align:center;font-size:12px}.note{background:#fff0e8;border-radius:8px;padding:16px;font-size:13px}footer{text-align:center;color:#888;font-size:12px}@media(max-width:640px){section{padding:20px 16px}main{padding:20px 12px}h1{font-size:21px}.previews{grid-template-columns:1fr}.previews img{height:330px}}
+</style></head><body><header><div><h1>دیوارک</h1><p>پروژه آموزشی سبک ثبت آگهی با Django — کد کامل، راهنمای اجرا و آموزش مرحله‌به‌مرحله</p></div></header><main><nav><a href="#start">شروع و اجرای پروژه</a><a href="#spec">نیازمندی‌ها و سناریوها</a><a href="#architecture">معماری و توضیح کد</a><a href="#course">آموزش هشت‌جلسه‌ای</a><a href="#exercises">تمرین‌ها و توسعه بعدی</a><a href="#testing">آزمایش و رفع خطا</a><a href="#deployment">محدوده نسخه و استقرار</a></nav><section><h2>از اینجا شروع کنید</h2><p>ابتدا Python 3.12 را نصب کنید. فایل ZIP را استخراج و در پوشه پروژه فایل <code>run_windows.bat</code> را اجرا کنید. سپس آدرس <code>http://127.0.0.1:8000/</code> را باز کنید.</p><p class="note">نام کاربری نمونه: <code>demo</code> — رمز: <code>Demo12345!</code>؛ این کاربر مدیر نیست. برای تأیید آگهی جدید، با فرمان <code>python manage.py createsuperuser</code> حساب مدیر بسازید.</p><h2>پیش‌نمایش واقعی صفحات</h2><div class="previews"><a href="docs/preview-desktop.png"><img src="docs/preview-desktop.png" alt="نمای دسکتاپ دیوارک"><span>دسکتاپ — کلیک برای دیدن تصویر کامل</span></a><a href="docs/preview-mobile.png"><img src="docs/preview-mobile.png" alt="نمای موبایل دیوارک"><span>موبایل — کلیک برای دیدن تصویر کامل</span></a></div></section><section id="start"><h1>دیوارک — پروژه آموزشی سبک با Django</h1>
+<p>یک وب‌سایت فارسی برای ثبت آگهی، با ایده‌ای مشابه دیوار. این پروژه مستقل است و به وب‌سایت دیوار وابسته نیست. هدف، یادگیری یک جریان واقعی از ثبت کاربر تا ثبت، بررسی و انتشار آگهی است.</p>
+<p><strong>فناوری‌ها:</strong> Python، Django 5.2.18، SQLite، Django Templates، CSS و JavaScript ساده. تنها وابستگی مستقیم اضافه، Pillow برای بررسی تصویر است. نیازی به Node.js، React، Redis، Docker یا API جداگانه ندارید.</p>
+<h2>چه چیزهایی آماده است؟</h2>
+<ul>
+<li>ثبت‌نام، ورود و خروج با سیستم داخلی Django؛ رمزها به‌صورت هش ذخیره می‌شوند.</li>
+<li>ثبت، مشاهده، ویرایش و حذف آگهی؛ فقط توسط صاحب آگهی.</li>
+<li>یک تصویر اختیاری برای هر آگهی؛ JPEG، PNG یا WebP تا ۳ مگابایت.</li>
+<li>هشت دسته‌بندی و شش شهر نمونه؛ قابل تغییر در پنل مدیریت.</li>
+<li>جست‌وجو در عنوان و توضیحات؛ فیلتر شهر، دسته و بازه قیمت؛ مرتب‌سازی و صفحه‌بندی.</li>
+<li>قیمت مشخص، توافقی یا رایگان؛ مبلغ‌ها به تومان هستند.</li>
+<li>پذیرش ارقام فارسی و عربی برای شماره تماس و مبلغ.</li>
+<li>تأیید و رد آگهی توسط مدیر؛ ویرایش، آگهی را دوباره به بررسی می‌فرستد.</li>
+<li>نشان‌کردن آگهی و اعلام «فروخته‌شده».</li>
+<li>نمایش شماره تماس فقط با ورود کاربر و درخواست نمایش شماره.</li>
+<li>رابط فارسی راست‌به‌چپ و واکنش‌گرا؛ فایل‌های CSS/JS محلی و بدون CDN.</li>
+<li>۱۳ آگهی ساختگی، داده نمونه تکرارپذیر و ۳۴ آزمون خودکار.</li>
+<li>راهنمای نصب، نیازمندی‌ها، معماری، مسیر آموزشی هشت‌جلسه‌ای و تمرین توسعه.</li>
+</ul>
+<h2>شروع سریع در ویندوز</h2>
+<ol>
+<li>
+<p>Python نسخه 3.12 را نصب کنید و گزینه «Add Python to PATH» را فعال کنید.</p>
+</li>
+<li>
+<p>فایل ZIP را استخراج کنید و وارد پوشه <code>divar_edu</code> شوید.</p>
+</li>
+<li>
+<p>فایل <code>run_windows.bat</code> را اجرا کنید. نصب بسته‌ها در اجرای اول به اینترنت نیاز دارد.</p>
+</li>
+<li>
+<p>مرورگر را روی این آدرس باز کنید:</p>
+</li>
+</ol>
+<p><code>http://127.0.0.1:8000/</code></p>
+<p>حساب نمونه:</p>
+<table>
+<thead>
+<tr>
+<th>مورد</th>
+<th>مقدار</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>نام کاربری</td>
+<td><code>demo</code></td>
+</tr>
+<tr>
+<td>رمز عبور</td>
+<td><code>Demo12345!</code></td>
+</tr>
+</tbody>
+</table>
+<p>این حساب مدیر نیست. اطلاعات آگهی‌ها و شماره <code>09000000000</code> ساختگی هستند. اجرای دوباره اسکریپت، رمز و آگهی‌های موجود را بازنویسی نمی‌کند.</p>
+<h3>اجرای دستی در ویندوز</h3>
+<p>در ترمینال و داخل پوشه پروژه اجرا کنید:</p>
+<pre><code class="language-powershell">py -3 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe manage.py migrate
+.\.venv\Scripts\python.exe manage.py seed_demo
+.\.venv\Scripts\python.exe manage.py runserver
+</code></pre>
+<p>این روش به فعال‌کردن محیط مجازی در PowerShell احتیاج ندارد و با محدودیت اجرای اسکریپت‌ها هم کار می‌کند.</p>
+<h2>اجرا در Linux و macOS</h2>
+<pre><code class="language-bash">bash run_linux_mac.sh
+</code></pre>
+<p>یا به‌صورت دستی:</p>
+<pre><code class="language-bash">python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+.venv/bin/python manage.py migrate
+.venv/bin/python manage.py seed_demo
+.venv/bin/python manage.py runserver
+</code></pre>
+<h2>ساخت مدیر و انتشار اولین آگهی</h2>
+<p>در ترمینال دیگری از همان پوشه:</p>
+<pre><code class="language-powershell"># ویندوز
+.\.venv\Scripts\python.exe manage.py createsuperuser
+</code></pre>
+<pre><code class="language-bash"># Linux / macOS
+.venv/bin/python manage.py createsuperuser
+</code></pre>
+<p>سپس:</p>
+<ol>
+<li>با حساب عادی وارد شوید و یک آگهی ثبت کنید؛ وضعیت آن «در انتظار تأیید» خواهد بود.</li>
+<li>آدرس <code>http://127.0.0.1:8000/admin/</code> را باز کنید و با حساب مدیر وارد شوید.</li>
+<li>در بخش آگهی‌ها، آگهی را انتخاب و عملیات «تأیید و انتشار» را اجرا کنید.</li>
+<li>صفحه اصلی را دوباره باز کنید؛ آگهی اکنون عمومی است.</li>
+<li>اگر آگهی را ویرایش کنید، دوباره نیاز به تأیید دارد. با «فروخته شد» از فهرست عمومی کنار می‌رود.</li>
+</ol>
+<h2>ساختار کد</h2>
+<table>
+<thead>
+<tr>
+<th>مسیر</th>
+<th>مسئولیت</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>config/</code></td>
+<td>تنظیمات و مسیریابی اصلی</td>
+</tr>
+<tr>
+<td><code>accounts/</code></td>
+<td>ثبت‌نام، ورود و خروج</td>
+</tr>
+<tr>
+<td><code>listings/models.py</code></td>
+<td>دسته، شهر، آگهی و نشان</td>
+</tr>
+<tr>
+<td><code>listings/forms.py</code></td>
+<td>بررسی فرم، ارقام فارسی و تصویر</td>
+</tr>
+<tr>
+<td><code>listings/views.py</code></td>
+<td>جریان درخواست‌ها و کنترل مالکیت</td>
+</tr>
+<tr>
+<td><code>listings/admin.py</code></td>
+<td>بررسی و انتشار آگهی</td>
+</tr>
+<tr>
+<td><code>listings/management/commands/seed_demo.py</code></td>
+<td>ساخت داده نمونه</td>
+</tr>
+<tr>
+<td><code>templates/</code></td>
+<td>صفحات HTML فارسی و اجزای مشترک</td>
+</tr>
+<tr>
+<td><code>static/</code></td>
+<td>ظاهر صفحات و پیش‌نمایش تصویر</td>
+</tr>
+<tr>
+<td><code>docs/</code></td>
+<td>راهنما و مسیر آموزشی</td>
+</tr>
+</tbody>
+</table>
+<h2>مطالعه به‌ترتیب</h2>
+<p>برای خواندن همه راهنماها در مرورگر، فایل <code>START_HERE_FA.html</code> را با دوبار کلیک باز کنید. تصاویر دسکتاپ و موبایل نیز داخل راهنما هستند.</p>
+<ol>
+<li><a href="docs/PROJECT_SPEC_FA.md">نیازمندی‌ها و سناریوهای پروژه</a></li>
+<li><a href="docs/ARCHITECTURE_FA.md">معماری و توضیح مسیر درخواست</a></li>
+<li><a href="docs/LEARNING_PATH_FA.md">مسیر آموزشی هشت‌جلسه‌ای</a></li>
+<li><a href="docs/EXERCISES_FA.md">تمرین‌ها و توسعه مرحله بعد</a></li>
+<li><a href="docs/TESTING_FA.md">آزمایش و رفع خطاهای رایج</a></li>
+<li><a href="docs/DEPLOYMENT_FA.md">محدوده نسخه آموزشی و استقرار</a></li>
+</ol>
+<h2>بررسی پروژه</h2>
+<pre><code class="language-powershell">.\.venv\Scripts\python.exe manage.py check
+.\.venv\Scripts\python.exe manage.py test
+.\.venv\Scripts\python.exe manage.py makemigrations --check --dry-run
+</code></pre>
+<p>در Linux/macOS، ابتدای فرمان‌ها را با <code>.venv/bin/python</code> جایگزین کنید.</p>
+<p>تست‌ها دیتابیس موقت می‌سازند و داده‌های واقعی پروژه را تغییر نمی‌دهند. دیتابیس آماده داخل بسته نیست؛ فرمان <code>migrate</code> آن را می‌سازد و <code>seed_demo</code> داده نمونه را اضافه می‌کند.</p>
+<h2>محدوده نسخه سبک</h2>
+<p>ورود با نام کاربری و رمز است؛ پیامک، چت، پرداخت، نقشه، گالری چندتصویری و بازیابی رمز ایمیلی در این نسخه پیاده‌سازی نشده‌اند. تاریخ‌ها میلادی هستند و منطقه زمانی <code>Asia/Tehran</code> است. تصاویر آگهی‌های نمونه به‌شکل جای‌نگهدار گرافیکی نمایش داده می‌شوند؛ برای عکس واقعی، در فرم آگهی تصویر خودتان را بارگذاری کنید.</p>
+<p>این نسخه برای آموزش و اجرای محلی آماده شده است. برای انتشار عمومی، مراحل عملیاتی در راهنمای استقرار را انجام دهید.</p>
+<h2>منابع رسمی</h2>
+<ul>
+<li><a href="https://docs.djangoproject.com/en/5.2/intro/tutorial01/">آموزش رسمی Django</a></li>
+<li><a href="https://docs.djangoproject.com/en/5.2/topics/forms/modelforms/">ModelForm</a></li>
+<li><a href="https://docs.djangoproject.com/en/5.2/topics/auth/default/">احراز هویت</a></li>
+<li><a href="https://docs.djangoproject.com/en/5.2/topics/security/">امنیت در Django</a></li>
+<li><a href="https://www.djangoproject.com/download/">نسخه‌های Django</a></li>
+</ul>
+<p>نسخه وابستگی‌ها برای بازتولید همین پروژه ثابت شده است؛ پیش از استفاده عملیاتی، آخرین اصلاحات امنیتی شاخه انتخابی را بررسی و بعد از ارتقا تست‌ها را اجرا کنید.</p></section><section id="spec"><h1>صورت پروژه: سامانه ثبت آگهی دیوارک</h1>
+<h2>هدف آموزشی</h2>
+<p>ساخت یک برنامه کامل اما کوچک با معماری معمول Django. هنرجو باید بتواند مسیر یک درخواست را توضیح دهد، رابطه‌های دیتابیس را طراحی کند، داده ورودی را بررسی کند و دسترسی به اطلاعات را در سمت سرور محدود کند.</p>
+<p>پیش‌نیاز: آشنایی مقدماتی با Python، تابع، کلاس، HTML، فرم و SQL. برای اجرای اولیه نیازی به یادگیری ابزارهای فرانت‌اند ندارید.</p>
+<h2>نقش‌ها</h2>
+<table>
+<thead>
+<tr>
+<th>نقش</th>
+<th>امکانات</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>مهمان</td>
+<td>دیدن آگهی‌های منتشرشده، جست‌وجو و ثبت‌نام</td>
+</tr>
+<tr>
+<td>کاربر عضو</td>
+<td>امکانات مهمان، ثبت آگهی، مدیریت آگهی خودش، نشان‌کردن و درخواست شماره تماس</td>
+</tr>
+<tr>
+<td>مدیر</td>
+<td>مدیریت کاربران، شهر و دسته؛ تأیید/رد آگهی در Django Admin</td>
+</tr>
+</tbody>
+</table>
+<h2>صفحات</h2>
+<table>
+<thead>
+<tr>
+<th>نشانی</th>
+<th>صفحه</th>
+<th>نیاز به ورود</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/</code></td>
+<td>فهرست، جست‌وجو و فیلتر</td>
+<td>خیر</td>
+</tr>
+<tr>
+<td><code>/ads/&lt;id&gt;/</code></td>
+<td>جزئیات آگهی عمومی؛ آگهی خصوصی فقط برای مالک</td>
+<td>برای عمومی خیر</td>
+</tr>
+<tr>
+<td><code>/ads/new/</code></td>
+<td>ثبت آگهی</td>
+<td>بله</td>
+</tr>
+<tr>
+<td><code>/ads/&lt;id&gt;/edit/</code></td>
+<td>ویرایش</td>
+<td>فقط مالک</td>
+</tr>
+<tr>
+<td><code>/ads/&lt;id&gt;/delete/</code></td>
+<td>تأیید حذف</td>
+<td>فقط مالک</td>
+</tr>
+<tr>
+<td><code>/my-ads/</code></td>
+<td>مدیریت آگهی‌ها</td>
+<td>بله</td>
+</tr>
+<tr>
+<td><code>/bookmarks/</code></td>
+<td>آگهی‌های نشان‌شده فعال</td>
+<td>بله</td>
+</tr>
+<tr>
+<td><code>/accounts/register/</code></td>
+<td>ثبت‌نام</td>
+<td>خیر</td>
+</tr>
+<tr>
+<td><code>/accounts/login/</code></td>
+<td>ورود</td>
+<td>خیر</td>
+</tr>
+<tr>
+<td><code>/admin/</code></td>
+<td>پنل مدیر</td>
+<td>مدیر</td>
+</tr>
+</tbody>
+</table>
+<p>نشانی‌های «فروخته‌شده»، «نشان» و «تماس» عملیات با روش POST هستند؛ بازکردن آن‌ها با GET عملیات را انجام نمی‌دهد.</p>
+<h2>اطلاعات هر آگهی</h2>
+<table>
+<thead>
+<tr>
+<th>فیلد</th>
+<th>قاعده</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>عنوان</td>
+<td>۵ تا ۱۲۰ نویسه</td>
+</tr>
+<tr>
+<td>توضیحات</td>
+<td>۲۰ تا ۵۰۰۰ نویسه</td>
+</tr>
+<tr>
+<td>دسته و شهر</td>
+<td>انتخاب از داده‌های مدیر</td>
+</tr>
+<tr>
+<td>محله</td>
+<td>اختیاری، حداکثر ۸۰ نویسه</td>
+</tr>
+<tr>
+<td>نوع قیمت</td>
+<td>مشخص، توافقی یا رایگان</td>
+</tr>
+<tr>
+<td>قیمت مشخص</td>
+<td>عدد صحیح مثبت، حداکثر ۹۹۹٬۹۹۹٬۹۹۹٬۹۹۹ تومان</td>
+</tr>
+<tr>
+<td>قیمت توافقی</td>
+<td>مقدار ذخیره‌شده NULL</td>
+</tr>
+<tr>
+<td>رایگان</td>
+<td>مقدار ذخیره‌شده صفر</td>
+</tr>
+<tr>
+<td>تلفن</td>
+<td>شماره همراه ۱۱ رقمی با شروع ۰۹؛ ارقام فارسی/عربی پذیرفته می‌شوند</td>
+</tr>
+<tr>
+<td>تصویر</td>
+<td>اختیاری، یک تصویر تا ۳ مگابایت و حداکثر ۱۶ میلیون پیکسل</td>
+</tr>
+<tr>
+<td>مالک</td>
+<td>از کاربر واردشده؛ قابل تعیین از فرم عمومی نیست</td>
+</tr>
+<tr>
+<td>وضعیت</td>
+<td>توسط سرور و مدیر؛ قابل تعیین از فرم عمومی نیست</td>
+</tr>
+</tbody>
+</table>
+<p>تصویر به JPEG تبدیل، تا حداکثر ۱۶۰۰×۱۶۰۰ کوچک و با نام تصادفی ذخیره می‌شود. این کار مقدار metadata و نام اصلی فایل را حذف می‌کند.</p>
+<h2>قواعد انتشار</h2>
+<ul>
+<li>آگهی جدید در انتظار تأیید است.</li>
+<li>مدیر می‌تواند آگهی در انتظار یا ردشده را منتشر کند.</li>
+<li>مدیر می‌تواند آگهی در انتظار یا منتشرشده را رد کند.</li>
+<li>ویرایش هر آگهی، حتی فروخته‌شده، آن را دوباره به «در انتظار تأیید» می‌برد.</li>
+<li>فقط مالک آگهی منتشرشده می‌تواند آن را فروخته‌شده کند.</li>
+<li>فقط آگهی منتشرشده در جست‌وجو و نشان‌ها نمایش داده می‌شود.</li>
+<li>وضعیت خصوصی فقط برای مالک در صفحه جزئیات قابل مشاهده است. مدیر برای بررسی از پنل مدیریت استفاده می‌کند.</li>
+</ul>
+<h2>سناریوهای پذیرش</h2>
+<ol>
+<li>کاربر جدید ثبت‌نام می‌کند، آگهی می‌سازد و آن را در «آگهی‌های من» می‌بیند.</li>
+<li>مهمان آگهی تأییدنشده را نمی‌بیند و بازکردن مستقیم نشانی آن پاسخ 404 می‌دهد.</li>
+<li>مدیر آگهی را تأیید می‌کند؛ آگهی در صفحه اصلی ظاهر می‌شود.</li>
+<li>کاربر دوم می‌تواند آگهی عمومی را نشان کند و با درخواست تماس شماره آن را ببیند.</li>
+<li>کاربر دوم با تغییر شناسه در URL نمی‌تواند آگهی مالک را ویرایش، حذف یا فروخته‌شده کند.</li>
+<li>جست‌وجو با شهر، دسته، متن و مبلغ فارسی هم‌زمان کار می‌کند.</li>
+<li>قیمت توافقی در فیلتر بازه مبلغ حذف و در مرتب‌سازی مبلغ در انتهای فهرست قرار می‌گیرد.</li>
+<li>حذف ابتدا صفحه تأیید دارد و فقط با POST انجام می‌شود.</li>
+<li>ویرایش آگهی منتشرشده باعث خروج آن از فهرست عمومی تا تأیید مجدد می‌شود.</li>
+<li>صفحه اصلی و فرم‌ها در موبایل بدون اسکرول افقی قابل استفاده‌اند.</li>
+</ol>
+<h2>مرز پروژه</h2>
+<p>این پروژه جریان آموزشی خریدوفروش آگهی را نشان می‌دهد و پلتفرم عملیاتی در مقیاس دیوار نیست. توسعه‌های بعدی را جداگانه و با معیار مشخص اضافه کنید تا خوانایی پروژه حفظ شود.</p></section><section id="architecture"><h1>معماری پروژه و توضیح کد</h1>
+<h2>الگوی MVT</h2>
+<table>
+<thead>
+<tr>
+<th>لایه</th>
+<th>نمونه در پروژه</th>
+<th>وظیفه</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Model</td>
+<td><code>Ad</code> در <code>listings/models.py</code></td>
+<td>ساختار و رابطه داده</td>
+</tr>
+<tr>
+<td>View</td>
+<td><code>ad_create</code> در <code>listings/views.py</code></td>
+<td>پردازش درخواست و تصمیم‌گیری</td>
+</tr>
+<tr>
+<td>Template</td>
+<td><code>templates/listings/form.html</code></td>
+<td>نمایش صفحه</td>
+</tr>
+<tr>
+<td>Form</td>
+<td><code>AdForm</code> در <code>listings/forms.py</code></td>
+<td>تبدیل و اعتبارسنجی ورودی</td>
+</tr>
+<tr>
+<td>URL</td>
+<td><code>listings/urls.py</code></td>
+<td>رساندن درخواست به View</td>
+</tr>
+</tbody>
+</table>
+<p>Viewهای عمومی به‌صورت تابع نوشته شده‌اند تا مسیر اجرا برای مبتدی روشن باشد. ورود و خروج از Viewهای آماده Django استفاده می‌کنند؛ بازنویسی احراز هویت، هدف این پروژه نیست.</p>
+<h2>مدل داده</h2>
+<p>نمودار این بخش در فایل Markdown معماری آمده است؛ توضیح رابطه‌ها و وضعیت‌ها در متن زیر قرار دارد.</p>
+<ul>
+<li>رابطه مالک آگهی با کاربر از <code>settings.AUTH_USER_MODEL</code> استفاده می‌کند.</li>
+<li>حذف دسته یا شهر دارای آگهی با <code>PROTECT</code> متوقف می‌شود تا آگهی بدون رابطه باقی نماند.</li>
+<li>حذف کاربر، آگهی‌ها و نشان‌های او را با <code>CASCADE</code> حذف می‌کند؛ برای سیستم واقعی سیاست نگهداری اطلاعات را جداگانه تعیین کنید.</li>
+<li>هر جفت کاربر/آگهی فقط یک نشان دارد. این قاعده با <code>UniqueConstraint</code> در دیتابیس نیز برقرار است.</li>
+<li>قاعده نوع قیمت با <code>CheckConstraint</code> پشتیبانی می‌شود تا حتی تغییر مستقیم دیتابیس هم مقدار ناسازگار نسازد.</li>
+<li>شاخص‌های دیتابیس روی وضعیت/زمان و شهر/دسته/وضعیت به جست‌وجوی رایج کمک می‌کنند. شاخص مناسب را با رشد واقعی داده بازبینی کنید.</li>
+</ul>
+<h2>مسیر ثبت آگهی</h2>
+<ol>
+<li><code>login_required</code> از ثبت بدون ورود جلوگیری می‌کند.</li>
+<li>در GET یک <code>AdForm</code> خالی نمایش داده می‌شود.</li>
+<li>در POST، متن از <code>request.POST</code> و تصویر از <code>request.FILES</code> وارد فرم می‌شود.</li>
+<li><code>is_valid()</code> هم فیلدهای فرم و هم اعتبارسنجی مدل را اجرا می‌کند.</li>
+<li><code>save(commit=False)</code> یک شیء ذخیره‌نشده می‌دهد.</li>
+<li>View مالک را از <code>request.user</code> و وضعیت را «در انتظار» قرار می‌دهد.</li>
+<li><code>save()</code> رکورد و تصویر را ذخیره می‌کند.</li>
+<li>Redirect به «آگهی‌های من» از ثبت مجدد همان POST هنگام Refresh جلوگیری می‌کند.</li>
+</ol>
+<p>نمونه کوتاه از منطق اصلی:</p>
+<pre><code class="language-python">ad = form.save(commit=False)
+ad.owner = request.user
+ad.status = Ad.Status.PENDING
+ad.save()
+</code></pre>
+<p>این خطوط دلیل حذف فیلدهای <code>owner</code> و <code>status</code> از فرم عمومی هستند. اعتماد به مقدارهای ارسالی مرورگر برای این دو فیلد، کنترل دسترسی را از بین می‌برد.</p>
+<h2>کنترل مالکیت</h2>
+<p>در ویرایش، حذف و اعلام فروش از این الگو استفاده شده است:</p>
+<pre><code class="language-python">ad = get_object_or_404(Ad, pk=pk, owner=request.user)
+</code></pre>
+<p>پنهان‌کردن دکمه در قالب به‌تنهایی کافی نیست. محدودیت باید هنگام دریافت شیء از دیتابیس اعمال شود. بازگرداندن 404 برای آگهی غیرمجاز، از افشای وجود آن نیز جلوگیری می‌کند.</p>
+<h2>جست‌وجو و صفحه‌بندی</h2>
+<p><code>SearchForm</code> به‌جای استفاده مستقیم از پارامترهای URL، مقدار شهر/دسته و مبلغ را بررسی می‌کند. اگر پارامتر نامعتبر باشد، پیام خطا و نتیجه خالی برمی‌گردد. <code>icontains</code> در عنوان و توضیح یک جست‌وجوی ساده آموزشی است؛ موتور جست‌وجوی زبانی فارسی نیست.</p>
+<p><code>select_related</code> رابطه دسته، شهر و مالک را در کوئری اصلی دریافت می‌کند و از کوئری جدا برای هر کارت جلوگیری می‌کند. <code>Paginator</code> دوازده آگهی در هر صفحه می‌آورد. تگ داخلی <code>querystring</code>، فیلترهای فعال را هنگام تغییر صفحه حفظ می‌کند.</p>
+<h2>ارقام و قیمت</h2>
+<p>تابع <code>normalize_digits</code> ارقام فارسی و عربی را به ارقام انگلیسی تبدیل می‌کند. <code>PersianIntegerField</code> جداکننده مبلغ را حذف می‌کند و سپس از بررسی عددی Django استفاده می‌کند. قالب با فیلتر <code>toman</code> مبلغ را با ارقام فارسی نمایش می‌دهد؛ دیتابیس همچنان عدد واقعی نگه می‌دارد.</p>
+<h2>تصویر</h2>
+<p>فرم تصویر را با Pillow بررسی و بازکدگذاری می‌کند. نام فایل با UUID ساخته می‌شود. محل ذخیره، <code>MEDIA_ROOT</code> است؛ فایل‌هایی که بخشی از کد هستند در <code>STATICFILES_DIRS</code> قرار دارند. این دو کاربرد را با هم مخلوط نکنید.</p>
+<p>در این نسخه، حذف آگهی یا تعویض عکس، فایل قدیمی را از دیسک پاک نمی‌کند. این رفتار پیش‌فرض Django است؛ پاک‌سازی امن فایل‌های بی‌استفاده یک تمرین مستقل است.</p>
+<h2>وضعیت‌ها</h2>
+<p>نمودار این بخش در فایل Markdown معماری آمده است؛ توضیح رابطه‌ها و وضعیت‌ها در متن زیر قرار دارد.</p>
+<p>خروج و تغییر نشان با POST انجام می‌شوند و فرم‌ها توکن CSRF دارند. توضیحات آگهی با autoescape قالب نمایش داده می‌شود؛ از <code>safe</code> برای متن کاربر استفاده نشده است.</p></section><section id="course"><h1>مسیر آموزشی هشت‌جلسه‌ای</h1>
+<p>زمان پیشنهادی برای هر جلسه ۹۰ تا ۱۲۰ دقیقه است؛ سرعت پیشروی به آشنایی شما با Python بستگی دارد. در هر جلسه ابتدا کد مربوط را بخوانید، سپس تغییر کوچک انجام دهید و معیار پایان جلسه را بررسی کنید.</p>
+<h2>جلسه ۱ — اجرا و شناخت پروژه</h2>
+<p><strong>فایل‌ها:</strong> <code>manage.py</code>، <code>config/settings.py</code>، <code>config/urls.py</code>.</p>
+<ul>
+<li>محیط مجازی را بسازید و تفاوت Python سیستم و Python محیط مجازی را توضیح دهید.</li>
+<li>نصب وابستگی، <code>migrate</code> و <code>seed_demo</code> را انجام دهید.</li>
+<li>تفاوت Project و App را در این پروژه پیدا کنید.</li>
+<li>چرا <code>INSTALLED_APPS</code>، <code>MIDDLEWARE</code> و <code>TEMPLATES</code> لازم‌اند؟</li>
+</ul>
+<p><strong>تمرین:</strong> نام نمایشی سایت در قالب پایه را به نام دلخواه تغییر دهید.</p>
+<p><strong>معیار پایان:</strong> صفحه اصلی اجرا شود و بتوانید بگویید کدام URL به کدام View وصل است.</p>
+<h2>جلسه ۲ — مدل و ORM</h2>
+<p><strong>فایل‌ها:</strong> <code>listings/models.py</code> و migration اولیه.</p>
+<ul>
+<li>چهار مدل و رابطه‌های آن‌ها را بررسی کنید.</li>
+<li>تفاوت <code>PROTECT</code> و <code>CASCADE</code> را شرح دهید.</li>
+<li>با <code>python manage.py shell</code> دسته، شهر و یک آگهی را بخوانید.</li>
+</ul>
+<pre><code class="language-python">from listings.models import Ad
+Ad.objects.filter(status=&quot;published&quot;, city__slug=&quot;tehran&quot;).count()
+Ad.objects.filter(price__gte=1_000_000).values(&quot;title&quot;, &quot;price&quot;)
+</code></pre>
+<p><strong>تمرین:</strong> فیلد اختیاری «برند کالا» را اضافه کنید. migration بسازید، آن را اعمال کنید و نمایش جزئیات را تغییر دهید.</p>
+<p><strong>معیار پایان:</strong> بدون ویرایش دستی دیتابیس، فیلد جدید ذخیره و نمایش داده شود.</p>
+<h2>جلسه ۳ — ثبت‌نام و احراز هویت</h2>
+<p><strong>فایل‌ها:</strong> پوشه <code>accounts/</code> و قالب‌های آن.</p>
+<ul>
+<li>چرا رمز را مستقیماً در مدل ذخیره نمی‌کنیم؟</li>
+<li><code>UserCreationForm</code> چه بررسی‌هایی انجام می‌دهد؟</li>
+<li>پس از ورود، Session چطور کاربر را در درخواست بعدی می‌شناسد؟</li>
+<li>پارامتر <code>next</code> چه کاربردی دارد و چرا باید مقصد آن بررسی شود؟</li>
+</ul>
+<p><strong>تمرین:</strong> در هدر برای کاربر واردشده نام او را نمایش دهید؛ نام کاربر را از قالب escape‌شده دریافت کنید.</p>
+<p><strong>معیار پایان:</strong> ثبت‌نام و ورود کار کند و کاربر جدید اجازه ورود به پنل مدیر را نداشته باشد.</p>
+<h2>جلسه ۴ — فرم و ثبت آگهی</h2>
+<p><strong>فایل‌ها:</strong> <code>AdForm</code> و View <code>ad_create</code>.</p>
+<ul>
+<li>تفاوت GET و POST، <code>request.POST</code> و <code>request.FILES</code> را توضیح دهید.</li>
+<li>نقش <code>is_valid</code>، <code>cleaned_data</code> و <code>commit=False</code> را دنبال کنید.</li>
+<li>مبلغ و شماره فارسی را امتحان کنید.</li>
+<li>چرا <code>enctype="multipart/form-data"</code> برای عکس لازم است؟</li>
+</ul>
+<p><strong>تمرین:</strong> عنوان‌های عمومی مثل «فروش» و «کالا» را رد کنید و پیام مشخص برگردانید.</p>
+<p><strong>معیار پایان:</strong> ورودی نامعتبر ذخیره نشود و خطا کنار فیلد مربوط نمایش داده شود.</p>
+<h2>جلسه ۵ — قالب و فهرست آگهی‌ها</h2>
+<p><strong>فایل‌ها:</strong> <code>base.html</code>، <code>list.html</code>، <code>includes/card.html</code> و CSS.</p>
+<ul>
+<li>ارث‌بری قالب و <code>include</code> را بررسی کنید.</li>
+<li>فایل static را از فایل media جدا کنید.</li>
+<li>دلیل escape شدن توضیحات کاربر را شرح دهید.</li>
+<li>صفحه را در عرض ۳۹۰ پیکسل بررسی کنید.</li>
+</ul>
+<p><strong>تمرین:</strong> برچسب «رایگان» را با استایل ویژه در کارت‌ها نمایش دهید.</p>
+<p><strong>معیار پایان:</strong> ظاهر موبایل به‌هم نریزد و یک جزء مشترک فقط در یک فایل ویرایش شود.</p>
+<h2>جلسه ۶ — جست‌وجو و صفحه‌بندی</h2>
+<p><strong>فایل‌ها:</strong> <code>SearchForm</code> و <code>ad_list</code>.</p>
+<ul>
+<li>پارامترهای GET را مشاهده و کوئری‌های فیلتر را مرحله‌به‌مرحله دنبال کنید.</li>
+<li>کاربرد <code>Q</code> برای OR را توضیح دهید.</li>
+<li>درباره حذف قیمت توافقی از بازه عددی تصمیم را توضیح دهید.</li>
+<li>با پارامتر شهر نامعتبر و مبلغ غیرعددی، رفتار سایت را ببینید.</li>
+</ul>
+<p><strong>تمرین:</strong> فیلتر «فقط دارای عکس» اضافه کنید و آن را در تغییر صفحه حفظ کنید.</p>
+<p><strong>معیار پایان:</strong> ترکیب متن، شهر، دسته و قیمت نتیجه درست بدهد و فیلترها در صفحه بعد باقی بمانند.</p>
+<h2>جلسه ۷ — مالکیت و بررسی آگهی</h2>
+<p><strong>فایل‌ها:</strong> <code>ad_edit</code>، <code>ad_delete</code>، <code>mark_sold</code> و <code>admin.py</code>.</p>
+<ul>
+<li>با دو حساب، تلاش کنید URL ویرایش کاربر اول را با حساب دوم باز کنید.</li>
+<li>آگهی را تأیید، سپس ویرایش کنید و تغییر وضعیت را ببینید.</li>
+<li>GET روی حذف را از POST حذف جدا کنید.</li>
+<li>چرا کنترل مالک در View باید حتی هنگام مخفی بودن دکمه‌ها انجام شود؟</li>
+</ul>
+<p><strong>تمرین:</strong> یک علت رد اختیاری در مدل اضافه کنید؛ مدیر آن را وارد کند و فقط مالک در داشبورد ببیند.</p>
+<p><strong>معیار پایان:</strong> کاربر دوم هیچ تغییری در آگهی اول نتواند ایجاد کند و آگهی خصوصی عمومی نشود.</p>
+<h2>جلسه ۸ — نشان، آزمون و ارائه</h2>
+<p><strong>فایل‌ها:</strong> مدل <code>Bookmark</code>، Viewهای نشان و فایل‌های <code>tests.py</code>.</p>
+<ul>
+<li>روی یک آگهی دو بار نشان‌کردن را انجام دهید و نتیجه را بررسی کنید.</li>
+<li>فرق اعتبارسنجی فرم و قید دیتابیس را توضیح دهید.</li>
+<li>آزمون‌ها را اجرا کنید و یکی را خط‌به‌خط شرح دهید.</li>
+<li>روی شاخه توسعه، یک رفتار را عمداً تغییر دهید، شکست تست مرتبط را ببینید و تغییر را برگردانید.</li>
+</ul>
+<p><strong>تمرین:</strong> یکی از توسعه‌های سند تمرین‌ها را با سناریوی پذیرش روشن اجرا کنید.</p>
+<p><strong>معیار پایان:</strong> اجرای پروژه از پوشه تازه، سناریوی ثبت تا انتشار و همه تست‌ها موفق باشد.</p>
+<h2>ترتیب پیشنهادی ارائه کلاسی</h2>
+<ol>
+<li>مسئله و نقش‌ها را توضیح دهید.</li>
+<li>صفحه اصلی و جست‌وجو را نشان دهید.</li>
+<li>یک آگهی ثبت کنید و انتظار تأیید را نمایش دهید.</li>
+<li>در پنل مدیر آگهی را منتشر کنید.</li>
+<li>مالکیت را با دو حساب آزمایش کنید.</li>
+<li>نشان و وضعیت فروخته‌شده را نشان دهید.</li>
+<li>معماری و یک تست مهم را شرح دهید.</li>
+</ol>
+<p>از ادعای داشتن پیامک، پرداخت یا چت خودداری کنید؛ این موارد در نسخه فعلی پیاده‌سازی نشده‌اند. امتیاز پروژه از توضیح روشن رفتار واقعی و تصمیم‌های کد به‌دست می‌آید.</p></section><section id="exercises"><h1>تمرین‌ها و توسعه مرحله بعد</h1>
+<p>این موارد تمرین پیشنهادی هستند و در کد فعلی وجود ندارند. برای حفظ سبک بودن پروژه، هر بار یک قابلیت اضافه کنید.</p>
+<table>
+<thead>
+<tr>
+<th>سطح</th>
+<th>تمرین</th>
+<th>معیار پذیرش</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ساده</td>
+<td>فیلد برند</td>
+<td>در ثبت، ویرایش و جزئیات ذخیره و نمایش داده شود</td>
+</tr>
+<tr>
+<td>ساده</td>
+<td>فیلتر فقط عکس‌دار</td>
+<td>فیلتر در صفحه‌بندی حفظ شود</td>
+</tr>
+<tr>
+<td>ساده</td>
+<td>شمارش آگهی‌های هر دسته</td>
+<td>فقط آگهی عمومی شمارش شود و تعداد کوئری با تعداد دسته رشد نکند</td>
+</tr>
+<tr>
+<td>متوسط</td>
+<td>علت رد آگهی</td>
+<td>مدیر وارد کند، فقط مالک آن را ببیند</td>
+</tr>
+<tr>
+<td>متوسط</td>
+<td>گالری تا سه تصویر</td>
+<td>هر عکس بررسی شود و محدودیت تعداد در سرور اعمال شود</td>
+</tr>
+<tr>
+<td>متوسط</td>
+<td>گزارش تخلف</td>
+<td>عضو گزارش کند؛ هر کاربر برای هر آگهی یک گزارش فعال داشته باشد</td>
+</tr>
+<tr>
+<td>متوسط</td>
+<td>انقضای آگهی</td>
+<td>آگهی منقضی عمومی نباشد؛ تست با زمان ثابت نوشته شود</td>
+</tr>
+<tr>
+<td>پیشرفته</td>
+<td>پاک‌سازی تصویر بی‌استفاده</td>
+<td>ابتدا dry-run گزارش بدهد، سپس فقط فایل بدون ارجاع حذف شود</td>
+</tr>
+<tr>
+<td>پیشرفته</td>
+<td>جست‌وجوی فارسی بهتر</td>
+<td>نمونه‌هایی با ی/ک عربی و فارسی یکسان پیدا شوند</td>
+</tr>
+<tr>
+<td>پیشرفته</td>
+<td>محدودسازی تلاش ورود</td>
+<td>تعداد درخواست و کلید شناسایی روشن باشد؛ خطای قابل فهم برگردد</td>
+</tr>
+</tbody>
+</table>
+<h2>نمونه مسیر توسعه «علت رد»</h2>
+<ol>
+<li>فیلد <code>rejection_reason</code> را به <code>Ad</code> اضافه کنید.</li>
+<li>migration بسازید و روی دیتابیس محلی اعمال کنید.</li>
+<li>فیلد را در فرم مدیر نمایش دهید؛ آن را به فرم عمومی مالک اضافه نکنید.</li>
+<li>فقط در صفحه «آگهی‌های من» و برای وضعیت ردشده آن را نمایش دهید.</li>
+<li>با دو حساب بررسی کنید که علت رد به کاربر دیگر نشت نکند.</li>
+<li>تست دسترسی و تست ذخیره متن اضافه کنید.</li>
+</ol>
+<h2>پرسش‌های بحث و ارزیابی</h2>
+<ul>
+<li>آیا وجود <code>login_required</code> برای محدودکردن ویرایش کافی است؟ چرا؟</li>
+<li>چرا برای نشان از مدل جداگانه و قید یکتا استفاده شده است؟</li>
+<li>آیا گرفتن شماره تماس بعد از ورود به معنای غیرقابل استخراج بودن شماره است؟ خیر؛ توضیح دهید چه چیزی کنترل شده است.</li>
+<li>با حذف آگهی، فایل تصویر روی دیسک چه می‌شود؟</li>
+<li>چرا قیمت توافقی صفر نیست؟ فرق NULL و صفر در فیلتر چیست؟</li>
+<li>چه زمانی جست‌وجوی <code>icontains</code> برای داده فارسی کافی نیست؟</li>
+<li>در صورت افزایش کاربران، چه شواهدی برای تغییر SQLite لازم دارید؟</li>
+</ul>
+<h2>معیار کیفیت برای قابلیت جدید</h2>
+<ul>
+<li>سناریوی واقعی و خروجی قابل مشاهده داشته باشد.</li>
+<li>مجوز دسترسی در سمت سرور بررسی شود.</li>
+<li>داده نامعتبر پیام روشن بدهد.</li>
+<li>قالب موبایل قابل استفاده بماند.</li>
+<li>تست، رفتار یا خطر واقعی را بررسی کند و صرفاً خطوط پیاده‌سازی را تکرار نکند.</li>
+<li>دستور اجرا و تغییر مدل در مستندات به‌روز شود.</li>
+</ul></section><section id="testing"><h1>آزمایش و رفع خطاهای رایج</h1>
+<h2>بررسی خودکار</h2>
+<pre><code class="language-bash">python manage.py check
+python manage.py makemigrations --check --dry-run
+python manage.py test
+</code></pre>
+<p>فرمان‌ها را با Python محیط مجازی اجرا کنید. اجرای تحویل اولیه روی Python 3.12 و Django 5.2.18 انجام شده و ۳۴ تست پاس شده است.</p>
+<table>
+<thead>
+<tr>
+<th>حوزه</th>
+<th>چیزی که بررسی می‌شود</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>حساب کاربری</td>
+<td>ثبت‌نام، کاربر تکراری، ورود، مقصد امن و خروج با POST</td>
+</tr>
+<tr>
+<td>مالکیت</td>
+<td>جلوگیری از ویرایش، حذف و اعلام فروش آگهی کاربر دیگر</td>
+</tr>
+<tr>
+<td>انتشار</td>
+<td>پنهان‌بودن آگهی خصوصی، تأیید/رد مدیر و بررسی دوباره پس از ویرایش</td>
+</tr>
+<tr>
+<td>فرم</td>
+<td>شماره و مبلغ فارسی، قیمت مشخص/رایگان/توافقی و مقدار نامعتبر</td>
+</tr>
+<tr>
+<td>تصویر</td>
+<td>ذخیره JPEG با نام تصادفی، رد فایل جعلی و بیش از حد حجیم</td>
+</tr>
+<tr>
+<td>جست‌وجو</td>
+<td>ترکیب فیلترها، خطای پارامتر، ترتیب قیمت و صفحه‌بندی</td>
+</tr>
+<tr>
+<td>نشان و تماس</td>
+<td>یکتایی نشان، پنهان‌شدن آگهی غیرفعال و درخواست شماره پس از ورود</td>
+</tr>
+<tr>
+<td>حفاظت درخواست</td>
+<td>الزامی بودن CSRF و escape شدن محتوای کاربر</td>
+</tr>
+<tr>
+<td>داده نمونه</td>
+<td>اجرای تکراری و حفظ رمز و داده موجود</td>
+</tr>
+</tbody>
+</table>
+<p>این آزمون‌ها رفتار مشخص نسخه آموزشی را بررسی می‌کنند.</p>
+<p>در مرورگر Chromium نیز صفحه اصلی در عرض ۱۴۴۰ و ۳۹۰ پیکسل، ورود کاربر، ثبت آگهی رایگان با ارقام فارسی، وضعیت انتظار تأیید و پاسخ 404 به مهمان برای آگهی خصوصی بررسی شد. صفحه اصلی، داشبورد و فرم در عرض ۳۹۰ پیکسل اسکرول افقی نداشتند و خطای JavaScript مشاهده نشد. تصاویر واقعی این بررسی در همین پوشه قرار دارند. اسکریپت ویندوز در این محیط Linux اجرا نشده است؛ دستورهای دستی ویندوز نیز در راهنما آمده‌اند.</p>
+<h2>آزمایش دستی ده‌دقیقه‌ای</h2>
+<ol>
+<li>مهمان فهرست را ببیند و با دو فیلتر جست‌وجو کند.</li>
+<li>کاربر تازه ثبت‌نام کند؛ آگهی با عکس و مبلغ فارسی بسازد.</li>
+<li>آگهی هنوز عمومی نباشد و در صفحه «آگهی‌های من» دیده شود.</li>
+<li>مدیر آن را تأیید کند و در فهرست عمومی دیده شود.</li>
+<li>حساب دوم آن را نشان کند و شماره را با کلیک نمایش دهد.</li>
+<li>حساب دوم با تغییر URL نتواند آگهی را ویرایش کند.</li>
+<li>مالک آگهی را ویرایش کند؛ وضعیت دوباره انتظار تأیید شود.</li>
+<li>پس از تأیید مجدد، مالک «فروخته شد» را بزند؛ آگهی عمومی ناپدید شود.</li>
+<li>صفحه حذف را باز کنید؛ تا زدن دکمه تأیید هیچ داده‌ای حذف نشود.</li>
+<li>صفحه‌ها را در عرض موبایل بررسی کنید.</li>
+</ol>
+<h2>خطاهای رایج</h2>
+<table>
+<thead>
+<tr>
+<th>خطا یا نشانه</th>
+<th>علت محتمل</th>
+<th>راه‌حل</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>No module named django</code></td>
+<td>فرمان با Python اشتباه اجرا شده</td>
+<td>از Python داخل <code>.venv</code> استفاده کنید</td>
+</tr>
+<tr>
+<td><code>no such table</code></td>
+<td>migration اجرا نشده</td>
+<td><code>python manage.py migrate</code></td>
+</tr>
+<tr>
+<td>دسته و شهر خالی هستند</td>
+<td>داده نمونه یا داده مدیر ساخته نشده</td>
+<td><code>python manage.py seed_demo</code> یا ساخت داده در Admin</td>
+</tr>
+<tr>
+<td>آگهی در صفحه اصلی نیست</td>
+<td>هنوز تأیید نشده، رد شده یا فروخته‌شده است</td>
+<td>وضعیت را در داشبورد یا Admin بررسی کنید</td>
+</tr>
+<tr>
+<td>ورود به Admin ممکن نیست</td>
+<td>حساب عادی است</td>
+<td><code>python manage.py createsuperuser</code></td>
+</tr>
+<tr>
+<td>رمز نمونه کار نمی‌کند</td>
+<td>حساب قبلاً ساخته و رمز عوض شده</td>
+<td><code>python manage.py changepassword demo</code></td>
+</tr>
+<tr>
+<td>پورت در استفاده است</td>
+<td>سرور دیگری روی 8000 اجرا شده</td>
+<td><code>python manage.py runserver 127.0.0.1:8001</code></td>
+</tr>
+<tr>
+<td>تصویر دیده نمی‌شود</td>
+<td>فایل media موجود نیست یا تنظیم سرو کردن آن درست نیست</td>
+<td>مسیر فایل و <code>MEDIA_ROOT</code> را بررسی کنید؛ در توسعه DEBUG روشن باشد</td>
+</tr>
+<tr>
+<td>پاسخ 403 برای فرم</td>
+<td>CSRF یا Origin نادرست</td>
+<td>فرم را از همان آدرس سرور باز کنید؛ CSRF را خاموش نکنید</td>
+</tr>
+<tr>
+<td><code>DisallowedHost</code></td>
+<td>میزبان در ALLOWED_HOSTS نیست</td>
+<td>میزبان دقیق را در متغیر محیطی اضافه کنید</td>
+</tr>
+<tr>
+<td>خطای نصب Pillow</td>
+<td>Python بسیار قدیمی یا نامتناسب با بسته است</td>
+<td>Python 3.12 و pip به‌روز داخل محیط مجازی استفاده کنید</td>
+</tr>
+</tbody>
+</table>
+<p>برای نصب در محیط فاقد اینترنت، بسته‌ها را روی سیستم دارای اینترنت با <code>pip download -r requirements.txt -d wheels</code> دریافت و با <code>pip install --no-index --find-links=wheels -r requirements.txt</code> نصب کنید. نسخه Python و معماری دو سیستم باید با wheelهای دانلودشده سازگار باشد.</p></section><section id="deployment"><h1>محدوده نسخه آموزشی و استقرار</h1>
+<h2>اجرای فعلی</h2>
+<p>تنظیم پیش‌فرض برای اجرای محلی است: DEBUG روشن، دیتابیس SQLite و میزبان‌های localhost. کلید پیش‌فرض صرفاً برای همین محیط است. اسکریپت‌های اجرا داده نمونه می‌سازند و از <code>runserver</code> استفاده می‌کنند.</p>
+<p>نسخه عمومی نیاز به تصمیم عملیاتی جداگانه دارد؛ هیچ استقرار اینترنتی همراه این بسته انجام نشده است.</p>
+<h2>متغیرهای محیطی</h2>
+<p>پروژه متغیرهای سیستم‌عامل را می‌خواند و فایل <code>.env</code> را به‌صورت خودکار بارگذاری نمی‌کند.</p>
+<table>
+<thead>
+<tr>
+<th>متغیر</th>
+<th>کاربرد</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DJANGO_DEBUG</code></td>
+<td><code>true</code> برای محلی؛ <code>false</code> برای انتشار</td>
+</tr>
+<tr>
+<td><code>DJANGO_SECRET_KEY</code></td>
+<td>کلید تصادفی؛ در حالت DEBUG=false اجباری است</td>
+</tr>
+<tr>
+<td><code>DJANGO_ALLOWED_HOSTS</code></td>
+<td>میزبان‌ها با جداکننده کاما</td>
+</tr>
+<tr>
+<td><code>DJANGO_CSRF_TRUSTED_ORIGINS</code></td>
+<td>Originهای HTTPS مجاز با جداکننده کاما</td>
+</tr>
+<tr>
+<td><code>DJANGO_DB_PATH</code></td>
+<td>مسیر دیتابیس SQLite؛ پیش‌فرض پوشه پروژه</td>
+</tr>
+</tbody>
+</table>
+<p>نمونه PowerShell برای بررسی تنظیمات انتشار:</p>
+<pre><code class="language-powershell">$env:DJANGO_DEBUG=&quot;false&quot;
+$env:DJANGO_SECRET_KEY=&quot;&lt;یک کلید بلند و تصادفی واقعی&gt;&quot;
+$env:DJANGO_ALLOWED_HOSTS=&quot;ads.example.com&quot;
+$env:DJANGO_CSRF_TRUSTED_ORIGINS=&quot;https://ads.example.com&quot;
+.\.venv\Scripts\python.exe manage.py check --deploy
+</code></pre>
+<p>با DEBUG=false، کوکی‌ها Secure می‌شوند و درخواست HTTP به HTTPS هدایت می‌شود. تنظیمات HSTS و reverse proxy به محیط استقرار وابسته‌اند و باید با مشخصات سرور تنظیم شوند. مقدارهای نمونه را به‌عنوان کلید واقعی استفاده نکنید.</p>
+<h2>کارهای ضروری پیش از انتشار عمومی</h2>
+<ul>
+<li>آخرین اصلاحات شاخه Django و بسته Pillow را بررسی کنید؛ پس از ارتقا همه آزمون‌ها را اجرا کنید.</li>
+<li>سرور WSGI/ASGI عملیاتی و HTTPS تنظیم کنید؛ <code>runserver</code> برای تولید نیست.</li>
+<li>فایل‌های static را با <code>collectstatic</code> جمع کنید و static/media را با سرویس مناسب ارائه دهید.</li>
+<li>برای media محدودیت حجم در وب‌سرور و فضای ذخیره‌سازی تعیین کنید؛ تنظیم حافظه Django جای محدودیت کامل وب‌سرور را نمی‌گیرد.</li>
+<li>از دیتابیس و media پشتیبان‌گیری و بازیابی آزمایشی انجام دهید.</li>
+<li>ظرفیت، هم‌زمانی و نیاز به PostgreSQL را با داده و اندازه واقعی بررسی کنید.</li>
+<li>محدودسازی تلاش ورود و ثبت آگهی، گزارش تخلف و سیاست رسیدگی را اضافه کنید.</li>
+<li>حساب <code>demo</code> را حذف و از داده ساختگی برای معامله استفاده نکنید؛ <code>seed_demo</code> در حالت DEBUG=false اجرا نمی‌شود.</li>
+<li>لاگ خطا، پایش سلامت و پاک‌سازی امن فایل‌های قدیمی را تنظیم کنید.</li>
+</ul>
+<h2>محدودیت‌های مشخص</h2>
+<ol>
+<li>حساب با نام کاربری و رمز است؛ تأیید تلفن با پیامک ندارد.</li>
+<li>شماره تماس پس از ورود قابل دریافت است؛ این سازوکار جلوی استخراج توسط کاربر واردشده را به‌طور کامل نمی‌گیرد.</li>
+<li>یک عکس برای هر آگهی وجود دارد؛ فایل‌های قدیمی پس از حذف یا تعویض عکس به‌صورت خودکار پاک نمی‌شوند.</li>
+<li>آگهی خصوصی در سایت عمومی محدود است؛ فایل media با URL مستقیم، کنترل دسترسی جداگانه ندارد. برای media خصوصی باید View/ذخیره‌سازی محافظت‌شده اضافه کنید.</li>
+<li>تاریخ‌ها میلادی و منطقه زمانی تهران است؛ تقویم شمسی تعاملی وجود ندارد.</li>
+<li>جست‌وجوی فارسی بر پایه <code>icontains</code> است؛ یکسان‌سازی حروف عربی/فارسی و رتبه‌بندی زبانی ندارد.</li>
+<li>چت، پرداخت، نقشه، API عمومی، انقضای خودکار و بازیابی رمز ایمیلی پیاده‌سازی نشده‌اند.</li>
+<li>«مدیر» در سناریوی ساده، superuser محلی است. برای تیم واقعی مجوزهای حداقلی و Groupهای Django تعریف کنید.</li>
+</ol>
+<p>این محدودیت‌ها انتخاب آگاهانه برای خوانایی و سبک بودن پروژه‌اند؛ معیار توسعه بعدی، نیاز واقعی و تست رفتار اضافه‌شده است.</p></section></main><footer>نسخه آموزشی مستقل؛ بدون وابستگی به وب‌سایت دیوار</footer></body></html>

@@ -1,0 +1,7 @@
+{% extends 'base.html' %}{% load listing_tags %}
+{% block title %}آگهی‌های من | دیوارک{% endblock %}
+{% block content %}
+<div class="page-heading"><div><p class="eyebrow">حساب شما</p><h1>آگهی‌های من</h1><p>آگهی‌هایتان را مدیریت کنید و وضعیت انتشارشان را ببینید.</p></div><a class="button button-primary" href="{% url 'listings:create' %}">+ آگهی جدید</a></div>
+<div class="my-ads-list">{% for ad in page_obj %}<article class="my-ad"><div class="my-ad-icon art-{{ ad.category.slug }}" aria-hidden="true">{{ ad.category.icon }}</div><div class="my-ad-info"><a href="{{ ad.get_absolute_url }}"><h2>{{ ad.title }}</h2></a><p>{{ ad.city.name }} · {{ ad.category.name }}</p><span class="status status-{{ ad.status }}">{{ ad.get_status_display }}</span></div><div class="my-ad-actions"><a class="button button-outline" href="{% url 'listings:edit' ad.pk %}">ویرایش</a>{% if ad.status == 'published' %}<form method="post" action="{% url 'listings:sold' ad.pk %}">{% csrf_token %}<button class="button button-outline" type="submit">فروخته شد</button></form>{% endif %}<a class="button button-danger" href="{% url 'listings:delete' ad.pk %}">حذف</a></div></article>{% empty %}<div class="empty-state"><span>+</span><h2>هنوز آگهی ثبت نکرده‌اید</h2><p>با ثبت اولین آگهی شروع کنید.</p><a class="button button-primary" href="{% url 'listings:create' %}">ثبت اولین آگهی</a></div>{% endfor %}</div>
+{% include 'includes/pagination.html' %}
+{% endblock %}

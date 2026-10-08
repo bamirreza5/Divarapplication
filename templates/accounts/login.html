@@ -1,0 +1,3 @@
+{% extends 'base.html' %}
+{% block title %}ورود | دیوارک{% endblock %}
+{% block content %}<div class="auth-card"><p class="eyebrow">خوش آمدید</p><h1>ورود به دیوارک</h1><p class="muted">برای ثبت آگهی و ارتباط با آگهی‌دهنده وارد شوید.</p><form method="post">{% csrf_token %}{% include 'includes/fields.html' %}<input type="hidden" name="next" value="{{ next }}"><button class="button button-primary button-full" type="submit">ورود به حساب</button></form><p class="auth-switch">حساب ندارید؟ <a href="{% url 'accounts:register' %}">ثبت‌نام کنید</a></p></div>{% endblock %}

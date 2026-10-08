@@ -1,0 +1,8 @@
+{% load listing_tags %}
+{% if page_obj.has_other_pages %}
+<nav class="pagination" aria-label="صفحه‌بندی">
+  {% if page_obj.has_previous %}<a class="button button-outline" href="{% querystring page=page_obj.previous_page_number %}">صفحه قبل</a>{% endif %}
+  <span>صفحه {{ page_obj.number|fa_number }} از {{ page_obj.paginator.num_pages|fa_number }}</span>
+  {% if page_obj.has_next %}<a class="button button-outline" href="{% querystring page=page_obj.next_page_number %}">صفحه بعد</a>{% endif %}
+</nav>
+{% endif %}

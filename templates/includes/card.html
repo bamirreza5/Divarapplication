@@ -1,0 +1,10 @@
+{% load static listing_tags %}
+<a class="ad-card" href="{{ ad.get_absolute_url }}">
+  <div class="card-info">
+    <span class="card-category">{{ ad.category.name }}</span><h2>{{ ad.title }}</h2>
+    <div class="card-bottom"><strong>{% if ad.price_type == 'free' %}رایگان{% elif ad.price_type == 'negotiable' %}توافقی{% else %}{{ ad.price|toman }} تومان{% endif %}</strong>
+    <p>{{ ad.city.name }}{% if ad.district %}، {{ ad.district }}{% endif %}</p></div>
+  </div>
+  {% if ad.image %}<img class="card-image" src="{{ ad.image.url }}" alt="{{ ad.title }}" loading="lazy" width="144" height="144">
+  {% else %}<div class="card-placeholder art-{{ ad.category.slug }}" aria-hidden="true"><span>{{ ad.category.icon }}</span><small>{{ ad.category.name }}</small></div>{% endif %}
+</a>
